@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Maven: net.sf.bluecove:bluecove:2.1.1">
+    <CLASSES>
+      <root url="jar://$M2_REPO$/net/sf/bluecove/bluecove/2.1.1/bluecove-2.1.1.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/bluecove-2.1.1-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$M2_REPO$/net/sf/bluecove/bluecove/2.1.1/bluecove-2.1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <NATIVE>
+      <root url="jar://$USER_HOME$/Downloads/bluecove-2.1.1-SNAPSHOT.jar!/" />
+    </NATIVE>
+    <SOURCES>
+      <root url="jar://$M2_REPO$/net/sf/bluecove/bluecove/2.1.1/bluecove-2.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
