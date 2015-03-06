@@ -7,9 +7,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.lipski.database.DatabaseAccess;
 import org.lipski.database.DatabaseUpdater;
 import org.lipski.server.BluetoothServer;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class App
     public static void main( String[] args ) throws Exception {
         App app = new App();
         BluetoothServer btServer = new BluetoothServer();
-        DatabaseUpdater.update();
+        DatabaseUpdater databaseUpdater = new DatabaseUpdater();
         btServer.startServer();
     }
 

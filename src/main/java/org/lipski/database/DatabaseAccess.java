@@ -1,5 +1,6 @@
 package org.lipski.database;
 
+import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projection;
@@ -11,15 +12,23 @@ import org.lipski.event.model.Event;
 import org.lipski.place.model.Comment;
 import org.lipski.place.model.Grade;
 import org.lipski.place.model.Place;
+import org.lipski.users.json.UserJson;
+import org.lipski.users.model.User;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class DatabaseAccess {
+public class DatabaseAccess<T> {
+
+    public DatabaseAccess() {}
+
     private static Connection getConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/engineerdb","root","MgE10UgC");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/btsdb","root","MgE10UgC");
     }
 
     public static ArrayList<String> getPlacesList() {
@@ -70,6 +79,73 @@ public class DatabaseAccess {
                 .list();
         transaction.commit();
         return comments;
+    }
+
+    public void save(T object) {
+        Session session = HibernateUtils.sessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        session.replicate(object, ReplicationMode.EXCEPTION);
+        transaction.commit();
+    }
+
+    public static Integer getMaxUserId() throws SQLException, ClassNotFoundException {
+        Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        String query = "SELECT MAX(user_id) FROM users";
+        ResultSet result = statement.executeQuery(query);
+        Integer maxId = 0;
+        while (result.next()) {
+            maxId = result.getInt(1);
+        }
+        if(maxId==null) {
+            return 0;
+        } else {
+            return maxId;
+        }
+    }
+
+    public void saveUser(UserJson userJson) throws SQLException, ClassNotFoundException {
+        Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        String query = "INSERT INTO users (user_id,username) VALUES(" + userJson.getId().toString() + ",'" + userJson.getUsername() + "')";
+        statement.execute(query);
+    }
+
+    public static ArrayList<String> getEventsList() {
+        Session session = HibernateUtils.sessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        List<String> eventsList = session.createCriteria(Event.class)
+                .setProjection(Projections.property("name"))
+                .list();
+        transaction.commit();
+        ArrayList<String> eventsArrayList = new ArrayList<String>(eventsList);
+        return eventsArrayList;
+    }
+
+    public static Map<String, Object> getEventData(String commandData) {
+        Map<String,Object> objectsToSend = new HashMap<String, Object>();
+
+        Session session = HibernateUtils.sessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        Event event = (Event) session.createCriteria(Event.class)
+                .add(Restrictions.like("name",commandData))
+                .setProjection(Projections.projectionList()
+                    .add(Projections.property("id"),"id")
+                    .add(Projections.property("name"),"name")
+                    .add(Projections.property("data"),"data"))
+                .setResultTransformer(Transformers.aliasToBean(Event.class))
+                .uniqueResult();
+
+        String placeName = (String) session.createCriteria(Event.class)
+                .add(Restrictions.like("name",commandData))
+                .setProjection(Projections.property("place.name"))
+                .uniqueResult();
+        transaction.commit();
+        Place place = getPlaceData(placeName);
+        objectsToSend.put("event",event);
+        objectsToSend.put("place",place);
+
+        return objectsToSend;
     }
 
 //    public static ArrayList<String> getPlacesList() throws SQLException, ClassNotFoundException {

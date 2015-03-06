@@ -133,4 +133,25 @@ public class WebController {
         in.close();
         return response.toString();
     }
+
+    public String getUserListToUpdate(Integer id) throws IOException {
+        String url = "http://localhost:8080/TouristApp/btserver/getjsonusers/" + id.toString();
+
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        con.setRequestMethod("GET");
+        con.setRequestProperty("User-Agent", USER_AGENT);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        return response.toString();
+    }
 }
