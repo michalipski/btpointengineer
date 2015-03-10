@@ -136,8 +136,9 @@ public class DatabaseAccess<T> {
                 .setResultTransformer(Transformers.aliasToBean(Event.class))
                 .uniqueResult();
 
-        String placeName = (String) session.createCriteria(Event.class)
+        String placeName = (String) session.createCriteria(Event.class,"event")
                 .add(Restrictions.like("name",commandData))
+                .createAlias("event.place","place")
                 .setProjection(Projections.property("place.name"))
                 .uniqueResult();
         transaction.commit();

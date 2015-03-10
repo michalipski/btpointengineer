@@ -21,7 +21,7 @@ public class CommandResolver {
         String commandArray[] = command.split(";",2);
         String commandName = commandArray[0].toUpperCase();
         String commandData = "";
-        if (!commandName.equals("PLACELIST") || !commandName.equals("EVENTLIST")) {
+        if (!commandName.equals("PLACELIST") && !commandName.equals("EVENTLIST")) {
             commandData = commandArray[1];
         }
 

@@ -43,6 +43,11 @@ public class DatabaseUpdater {
         type = new TypeToken<List<CommentJson>>(){}.getType();
         List<CommentJson> commentJsonList = gson.fromJson(jsonString,type);
         updateComments(commentJsonList);
+
+        jsonString = webController.getObjectListToUpdate("event");
+        type = new TypeToken<List<EventJson>>(){}.getType();
+        List<EventJson> eventJsonList = gson.fromJson(jsonString,type);
+        updateEvents(eventJsonList);
     }
 
     private void updateComments(List<CommentJson> comments) {
@@ -107,6 +112,7 @@ public class DatabaseUpdater {
                 place.setId(eventJson.getPlaceId());
                 Event event = new Event(eventJson.getName(),place,eventJson.getData(),eventJson.getDescription());
                 event.setId(eventJson.getId());
+                event.setChanged(false);
                 DatabaseAccess<Event> eventDatabaseAccess = new DatabaseAccess<Event>();
                 eventDatabaseAccess.save(event);
             }
