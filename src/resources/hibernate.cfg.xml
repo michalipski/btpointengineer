@@ -29,5 +29,6 @@
         <mapping class="org.lipski.users.model.User"/>
         <mapping class="org.lipski.users.model.UserRole"/>
         <mapping class="org.lipski.btserver.model.BluetoothServer"/>
+        <mapping class="org.lipski.photos.model.PlacePhoto"/>
     </session-factory>
 </hibernate-configuration>

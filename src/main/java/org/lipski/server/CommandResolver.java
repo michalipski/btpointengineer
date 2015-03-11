@@ -40,6 +40,8 @@ public class CommandResolver {
                 return webController.commentPlace(commandData);
             case GRADE:
                 return webController.gradePlace(commandData);
+            case GETPHOTOS:
+                return DatabaseAccess.getPhotosList(commandData);
         }
         return null;
     }
@@ -50,8 +52,8 @@ public class CommandResolver {
         EVENTLIST,
         GETEVENT,
         GETPLACE,
+        GETPHOTOS,
         COMMENT,
         GRADE
-
     }
 }

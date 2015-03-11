@@ -9,13 +9,20 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.lipski.btserver.model.BluetoothServer;
 import org.lipski.event.model.Event;
+import org.lipski.photos.model.PlacePhoto;
 import org.lipski.place.model.Comment;
 import org.lipski.place.model.Grade;
 import org.lipski.place.model.Place;
 import org.lipski.users.json.UserJson;
 import org.lipski.users.model.User;
 
+import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,6 +154,38 @@ public class DatabaseAccess<T> {
         objectsToSend.put("place",place);
 
         return objectsToSend;
+    }
+
+    private static byte[] getByteArrayPhoto(PlacePhoto photo) throws IOException {
+        String photoDir = photo.getPhotoDir();
+        File photoFile = new File(photoDir);
+        BufferedImage image = ImageIO.read(photoFile);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image,"jpg",byteArrayOutputStream);
+        byteArrayOutputStream.flush();
+        byte[] resultPhoto = byteArrayOutputStream.toByteArray();
+        byteArrayOutputStream.close();
+        return resultPhoto;
+    }
+
+    public static ArrayList<byte[]> getPhotosList(String placeName) throws IOException {
+        ArrayList<byte[]> photosArray = new ArrayList<byte[]>();
+        List<PlacePhoto> photos = getPhotosForPlace(placeName);
+        for(PlacePhoto photo:photos) {
+            photosArray.add(getByteArrayPhoto(photo));
+        }
+        return photosArray;
+    }
+
+    private static List<PlacePhoto> getPhotosForPlace(String placeName) {
+        Session session = HibernateUtils.sessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        List<PlacePhoto> photosList = session.createCriteria(PlacePhoto.class,"photo")
+                .createAlias("photo.place","place")
+                .add(Restrictions.like("place.name",placeName))
+                .list();
+        transaction.commit();
+        return photosList;
     }
 
 //    public static ArrayList<String> getPlacesList() throws SQLException, ClassNotFoundException {
